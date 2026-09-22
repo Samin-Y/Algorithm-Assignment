@@ -7,16 +7,16 @@ import com.graphprompt.util.MockDataLoader;
 import com.graphprompt.util.TokenEstimator;
 import com.graphprompt.view.GraphRenderer;
 import javafx.fxml.FXML;
-import javafx.scene.canvas.Canvas;
-import javafx.scene.control.Slider;
-import javafx.scene.control.TextArea;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
 import javafx.scene.layout.Pane;
 
 import java.util.*;
 
 public class MainController {
 
-    @FXML private Canvas graphCanvas;
     @FXML private Pane canvasPane;
     @FXML private TextArea consoleOutput;
     
@@ -24,24 +24,71 @@ public class MainController {
     @FXML private Slider sliderAlpha;
     @FXML private Slider sliderBeta;
     @FXML private Slider sliderGamma;
+    
+    @FXML private TextField txtBudget;
+    @FXML private TextField txtAlpha;
+    @FXML private TextField txtBeta;
+    @FXML private TextField txtGamma;
+    @FXML private Button btnShowConv;
 
     private KnowledgeGraph graph;
     private GraphRenderer renderer;
     private List<String> mockData;
+    private int totalRawTokens = 0;
 
     @FXML
     public void initialize() {
         graph = new KnowledgeGraph();
-        renderer = new GraphRenderer(graphCanvas);
+        renderer = new GraphRenderer(canvasPane);
         mockData = MockDataLoader.getMockChatTurns();
         
-        graphCanvas.widthProperty().bind(canvasPane.widthProperty());
-        graphCanvas.heightProperty().bind(canvasPane.heightProperty());
+        canvasPane.widthProperty().addListener((obs, oldVal, newVal) -> renderer.drawGraph(null, null));
+        canvasPane.heightProperty().addListener((obs, oldVal, newVal) -> renderer.drawGraph(null, null));
         
-        graphCanvas.widthProperty().addListener((obs, oldVal, newVal) -> renderer.drawGraph(null, null));
-        graphCanvas.heightProperty().addListener((obs, oldVal, newVal) -> renderer.drawGraph(null, null));
+        setupSliderBinding(sliderBudget, txtBudget, true);
+        setupSliderBinding(sliderAlpha, txtAlpha, false);
+        setupSliderBinding(sliderBeta, txtBeta, false);
+        setupSliderBinding(sliderGamma, txtGamma, false);
         
         log("System initialized. Ready to ingest mock data.");
+    }
+    
+    private void setupSliderBinding(Slider slider, TextField textField, boolean isInt) {
+        slider.valueProperty().addListener((obs, oldVal, newVal) -> {
+            if (isInt) {
+                textField.setText(String.valueOf(newVal.intValue()));
+            } else {
+                textField.setText(String.format(Locale.US, "%.2f", newVal.doubleValue()));
+            }
+        });
+        textField.textProperty().addListener((obs, oldVal, newVal) -> {
+            try {
+                if (isInt) {
+                    slider.setValue(Integer.parseInt(newVal));
+                } else {
+                    slider.setValue(Double.parseDouble(newVal));
+                }
+            } catch (NumberFormatException e) {
+                // Ignore invalid input while typing
+            }
+        });
+    }
+
+    @FXML
+    private void handleShowConversation() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/graphprompt/view/conversation.fxml"));
+            Parent conversationRoot = loader.load();
+            
+            ConversationController controller = loader.getController();
+            controller.setPreviousRoot(canvasPane.getScene().getRoot());
+            controller.loadConversation(mockData);
+            
+            canvasPane.getScene().setRoot(conversationRoot);
+        } catch (Exception e) {
+            log("Error loading conversation view: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     @FXML
@@ -52,6 +99,7 @@ public class MainController {
             GraphIngestion.ingest(graph, message);
             rawTokens += TokenEstimator.estimateTokens(message);
         }
+        this.totalRawTokens = rawTokens;
         
         updateSalience();
         renderer.setGraph(graph);
@@ -131,8 +179,8 @@ public class MainController {
         renderer.drawGraph(selected, null);
         
         log("\n=== Assemble Prompt (" + (useDP ? "0/1 Knapsack DP" : "Greedy") + ") ===");
-        log("Budget: " + budget + " | Used: " + usedTokens);
-        log("Execution time: " + String.format("%.3f", (endTime - startTime) / 1000000.0) + " ms");
+        log(String.format("Raw Tokens Needed: %d | Optimized Tokens Needed (Budget): %d | Used: %d", totalRawTokens, budget, usedTokens));
+        log("Execution time: " + String.format(Locale.US, "%.3f", (endTime - startTime) / 1000000.0) + " ms");
         
         List<String> concepts = new ArrayList<>();
         for (EntityNode n : selected) concepts.add(n.getConcept());

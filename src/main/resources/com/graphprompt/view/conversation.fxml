@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import java.net.URL?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="com.graphprompt.controller.ConversationController" styleClass="root, chat-pane">
+    <stylesheets>
+        <URL value="@style.css"/>
+    </stylesheets>
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="20" style="-fx-padding: 20; -fx-background-color: #1e1f20; -fx-border-color: transparent transparent #444746 transparent; -fx-border-width: 0 0 1 0;">
+            <Button text="← Back to Graph" onAction="#handleBack" styleClass="button"/>
+            <Label text="AI Conversation" styleClass="title-label" style="-fx-font-size: 18px;"/>
+        </HBox>
+    </top>
+    <center>
+        <ScrollPane fx:id="scrollPane" fitToWidth="true" styleClass="scroll-pane" style="-fx-padding: 20;">
+            <VBox fx:id="chatContainer" spacing="15" style="-fx-padding: 10 20;"/>
+        </ScrollPane>
+    </center>
+</BorderPane>

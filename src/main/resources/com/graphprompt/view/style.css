@@ -1,0 +1,122 @@
+.root {
+    -fx-background-color: #131314;
+    -fx-font-family: 'Inter', 'Segoe UI', sans-serif;
+    -fx-text-fill: #e3e3e3;
+}
+
+.label {
+    -fx-text-fill: #e3e3e3;
+}
+
+.title-label {
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+    -fx-text-fill: linear-gradient(to right, #9b72cb, #d96570);
+}
+
+.button {
+    -fx-background-color: #1e1f20;
+    -fx-text-fill: #e3e3e3;
+    -fx-border-color: #444746;
+    -fx-border-radius: 20px;
+    -fx-background-radius: 20px;
+    -fx-padding: 8px 16px;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+}
+
+.button:hover {
+    -fx-background-color: #2a2b2f;
+    -fx-border-color: #9b72cb;
+}
+
+.button:pressed {
+    -fx-background-color: #444746;
+}
+
+.text-field {
+    -fx-background-color: #1e1f20;
+    -fx-text-fill: #e3e3e3;
+    -fx-border-color: #444746;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-padding: 4px 8px;
+}
+
+.text-field:focused {
+    -fx-border-color: #9b72cb;
+}
+
+.slider .track {
+    -fx-background-color: #444746;
+    -fx-background-radius: 4px;
+}
+
+.slider .thumb {
+    -fx-background-color: #9b72cb;
+}
+
+.slider .thumb:hover {
+    -fx-background-color: #d96570;
+}
+
+.canvas-pane {
+    -fx-background-color: #1e1f20;
+    -fx-border-color: #444746;
+    -fx-border-radius: 12px;
+    -fx-background-radius: 12px;
+    -fx-padding: 10px;
+}
+
+.text-area {
+    -fx-background-color: #1e1f20;
+    -fx-control-inner-background: #1e1f20;
+    -fx-text-fill: #e3e3e3;
+    -fx-border-color: #444746;
+    -fx-border-radius: 12px;
+    -fx-background-radius: 12px;
+    -fx-font-family: 'Consolas', monospace;
+}
+
+.text-area .content {
+    -fx-background-color: #1e1f20;
+}
+
+.vbox, .hbox, .border-pane {
+    -fx-background-color: transparent;
+}
+
+/* Chat Messenger Styles */
+.chat-pane {
+    -fx-background-color: #131314;
+}
+
+.chat-bubble-user {
+    -fx-background-color: #9b72cb;
+    -fx-text-fill: #ffffff;
+    -fx-background-radius: 18px 18px 0px 18px;
+    -fx-padding: 10px 15px;
+    -fx-font-size: 14px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 5, 0, 0, 2);
+}
+
+.chat-bubble-ai {
+    -fx-background-color: #1e1f20;
+    -fx-text-fill: #e3e3e3;
+    -fx-background-radius: 18px 18px 18px 0px;
+    -fx-padding: 10px 15px;
+    -fx-font-size: 14px;
+    -fx-border-color: #444746;
+    -fx-border-radius: 18px 18px 18px 0px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 5, 0, 0, 2);
+}
+
+.scroll-pane {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+}
+
+.scroll-pane .viewport {
+    -fx-background-color: transparent;
+}
