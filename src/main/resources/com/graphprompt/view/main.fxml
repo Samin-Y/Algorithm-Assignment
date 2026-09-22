@@ -17,7 +17,7 @@
             <HBox spacing="12">
                 <Button text="Show Conversation" fx:id="btnShowConv" onAction="#handleShowConversation"/>
                 <Button text="Ingest Mock Data" fx:id="btnIngest" onAction="#handleIngest"/>
-                <Button text="Run Dijkstra (Random)" fx:id="btnDijkstra" onAction="#handleDijkstra"/>
+                <Button text="Run Dijkstra" fx:id="btnDijkstra" onAction="#handleDijkstra"/>
                 <Button text="Run BFS" fx:id="btnBFS" onAction="#handleBFS"/>
                 <Button text="Assemble Prompt (Knapsack DP)" fx:id="btnDP" onAction="#handleDP"/>
                 <Button text="Assemble Prompt (Greedy)" fx:id="btnGreedy" onAction="#handleGreedy"/>

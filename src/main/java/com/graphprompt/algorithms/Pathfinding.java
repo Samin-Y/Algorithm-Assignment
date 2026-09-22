@@ -31,7 +31,7 @@ public class Pathfinding {
 
             for (RelationshipEdge edge : graph.getEdges(current)) {
                 EntityNode neighbor = edge.getDestination();
-                double weight = 1.0 / Math.max(0.01, edge.getConfidence());
+                double weight = 1.0 / (edge.getConfidence() + 0.001);
                 double alt = distances.get(current) + weight;
                 
                 if (alt < distances.get(neighbor)) {
@@ -82,5 +82,51 @@ public class Pathfinding {
         }
         
         return visited;
+    }
+    
+    public static Set<EntityNode> findReasoningSubgraph(KnowledgeGraph graph, EntityNode start, List<EntityNode> targets) {
+        if (start == null || graph == null) return Collections.emptySet();
+
+        Map<EntityNode, Double> distances = new HashMap<>();
+        Map<EntityNode, EntityNode> previous = new HashMap<>();
+        PriorityQueue<EntityNode> queue = new PriorityQueue<>(Comparator.comparingDouble(distances::get));
+
+        for (EntityNode node : graph.getAllNodes()) {
+            distances.put(node, Double.MAX_VALUE);
+            previous.put(node, null);
+        }
+
+        distances.put(start, 0.0);
+        queue.add(start);
+
+        while (!queue.isEmpty()) {
+            EntityNode current = queue.poll();
+            
+            for (RelationshipEdge edge : graph.getEdges(current)) {
+                EntityNode neighbor = edge.getDestination();
+                double weight = 1.0 / (edge.getConfidence() + 0.001);
+                double alt = distances.get(current) + weight;
+                
+                if (alt < distances.get(neighbor)) {
+                    distances.put(neighbor, alt);
+                    previous.put(neighbor, current);
+                    
+                    queue.remove(neighbor); 
+                    queue.add(neighbor);
+                }
+            }
+        }
+        
+        Set<EntityNode> subgraph = new HashSet<>();
+        for (EntityNode target : targets) {
+            EntityNode curr = target;
+            if (previous.get(curr) != null || curr.equals(start)) {
+                while (curr != null) {
+                    subgraph.add(curr);
+                    curr = previous.get(curr);
+                }
+            }
+        }
+        return subgraph;
     }
 }

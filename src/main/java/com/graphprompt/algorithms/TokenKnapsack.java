@@ -52,6 +52,8 @@ public class TokenKnapsack {
             if (currentWeight + node.getTokenWeight() <= budget) {
                 selected.add(node);
                 currentWeight += node.getTokenWeight();
+            } else {
+                break; // stop when next item exceeds budget
             }
         }
 

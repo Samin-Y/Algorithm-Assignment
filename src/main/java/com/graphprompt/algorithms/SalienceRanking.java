@@ -9,14 +9,24 @@ public class SalienceRanking {
 
     public static void rankNodes(KnowledgeGraph graph, double alpha, double beta, double gamma) {
         List<EntityNode> nodes = graph.getAllNodes();
-        
+        if (nodes.isEmpty()) return;
+
+        double maxFreq = 1.0;
+        double maxDegree = 1.0;
+
+        for (EntityNode node : nodes) {
+            if (node.getFrequency() > maxFreq) maxFreq = node.getFrequency();
+            if (graph.getDegree(node) > maxDegree) maxDegree = graph.getDegree(node);
+        }
+
         // Calculate Salience
         for (EntityNode node : nodes) {
-            double freq = node.getFrequency();
-            double recency = node.getRecency();
-            double degree = graph.getDegree(node);
+            double normFreq = node.getFrequency() / maxFreq;
+            double normDegree = graph.getDegree(node) / maxDegree;
+            // Recency is between 0 and 1, we simulate exponential decay based on recency value distance from 1.0
+            double decay = Math.exp(-1.0 * (1.0 - node.getRecency()));
             
-            double salience = (alpha * freq) + (beta * recency) + (gamma * degree);
+            double salience = (alpha * normFreq) + (beta * decay) + (gamma * normDegree);
             node.setSalienceScore(salience);
         }
     }

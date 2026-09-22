@@ -115,22 +115,29 @@ public class MainController {
     private void handleDijkstra() {
         if (graph.getAllNodes().size() < 2) return;
         
-        List<EntityNode> nodes = graph.getAllNodes();
-        EntityNode start = nodes.get(new Random().nextInt(nodes.size()));
-        EntityNode end = nodes.get(new Random().nextInt(nodes.size()));
+        updateSalience();
+        List<EntityNode> sortedNodes = SalienceRanking.sortNodes(graph.getAllNodes());
         
-        List<EntityNode> path = Pathfinding.findShortestPathDijkstra(graph, start, end);
-        
-        renderer.drawGraph(path, null);
-        log("\n--- Dijkstra ---");
-        log("Shortest Path from '" + start.getConcept() + "' to '" + end.getConcept() + "':");
-        if (path.isEmpty()) {
-            log("No path found.");
-        } else {
-            List<String> pathStr = new ArrayList<>();
-            for (EntityNode n : path) pathStr.add(n.getConcept());
-            log(String.join(" -> ", pathStr));
+        EntityNode start = sortedNodes.get(0);
+        List<EntityNode> targets = new ArrayList<>();
+        for (int i = 1; i < Math.min(4, sortedNodes.size()); i++) {
+            targets.add(sortedNodes.get(i));
         }
+        
+        Set<EntityNode> subgraph = Pathfinding.findReasoningSubgraph(graph, start, targets);
+        
+        renderer.drawGraph(subgraph, null);
+        
+        log("\n--- Dijkstra Reasoning Subgraph ---");
+        log(String.format(Locale.US, "Start Node: '%s' (Salience: %.3f)", start.getConcept(), start.getSalienceScore()));
+        log("Target Nodes:");
+        for (EntityNode t : targets) {
+            log(String.format(Locale.US, "  - '%s' (Salience: %.3f)", t.getConcept(), t.getSalienceScore()));
+        }
+        log("Extracted Reasoning Subgraph Nodes: " + subgraph.size());
+        List<String> subNames = new ArrayList<>();
+        for (EntityNode n : subgraph) subNames.add(n.getConcept());
+        log("Path concepts: " + String.join(", ", subNames));
     }
 
     @FXML
@@ -175,11 +182,13 @@ public class MainController {
         long endTime = System.nanoTime();
         
         int usedTokens = selected.stream().mapToInt(EntityNode::getTokenWeight).sum();
+        double totalValue = selected.stream().mapToDouble(EntityNode::getSalienceScore).sum();
         
         renderer.drawGraph(selected, null);
         
         log("\n=== Assemble Prompt (" + (useDP ? "0/1 Knapsack DP" : "Greedy") + ") ===");
-        log(String.format("Raw Tokens Needed: %d | Optimized Tokens Needed (Budget): %d | Used: %d", totalRawTokens, budget, usedTokens));
+        log(String.format(Locale.US, "Raw Tokens Needed: %d | Optimized Tokens Needed (Budget): %d | Used: %d", totalRawTokens, budget, usedTokens));
+        log(String.format(Locale.US, "Total Value (Salience) Packed: %.3f", totalValue));
         log("Execution time: " + String.format(Locale.US, "%.3f", (endTime - startTime) / 1000000.0) + " ms");
         
         List<String> concepts = new ArrayList<>();
