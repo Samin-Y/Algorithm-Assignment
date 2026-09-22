@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.canvas.Canvas?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="com.graphprompt.controller.MainController">
+    <top>
+        <VBox spacing="10" style="-fx-padding: 10;">
+            <Label text="Dynamic Knowledge Graph Retrieval (Graph-to-Prompt Engine)" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+            <HBox spacing="10">
+                <Button text="Ingest Mock Data" fx:id="btnIngest" onAction="#handleIngest"/>
+                <Button text="Run Dijkstra (Random)" fx:id="btnDijkstra" onAction="#handleDijkstra"/>
+                <Button text="Run BFS" fx:id="btnBFS" onAction="#handleBFS"/>
+                <Button text="Assemble Prompt (Knapsack DP)" fx:id="btnDP" onAction="#handleDP"/>
+                <Button text="Assemble Prompt (Greedy)" fx:id="btnGreedy" onAction="#handleGreedy"/>
+            </HBox>
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Token Budget (B):"/>
+                <Slider fx:id="sliderBudget" min="10" max="500" value="50" showTickLabels="true" showTickMarks="true"/>
+                <Label text="Alpha (Freq):"/>
+                <Slider fx:id="sliderAlpha" min="0" max="1" value="0.5"/>
+                <Label text="Beta (Recency):"/>
+                <Slider fx:id="sliderBeta" min="0" max="1" value="0.5"/>
+                <Label text="Gamma (Degree):"/>
+                <Slider fx:id="sliderGamma" min="0" max="1" value="0.5"/>
+            </HBox>
+        </VBox>
+    </top>
+    <center>
+        <Pane fx:id="canvasPane" style="-fx-border-color: black; -fx-border-width: 1;">
+            <Canvas fx:id="graphCanvas" width="700" height="400"/>
+        </Pane>
+    </center>
+    <bottom>
+        <VBox spacing="5" style="-fx-padding: 10;">
+            <Label text="Output Console"/>
+            <TextArea fx:id="consoleOutput" editable="false" prefRowCount="8"/>
+        </VBox>
+    </bottom>
+</BorderPane>
